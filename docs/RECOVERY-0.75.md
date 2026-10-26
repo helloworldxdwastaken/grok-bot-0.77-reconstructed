@@ -60,7 +60,7 @@ The main preload exposes `desktop`, `desktopMount`, `coordinatorPort` and
 ## Native binaries (Ghidra)
 
 Ghidra 12.1.4 headless, AARCH64 Apple Silicon slices: 10,308 functions
-decompiled, 5 failed.
+decompiled; 3–5 hit the 60 s per-function timeout depending on the run.
 
 | Binary | Lang | Functions | What it does (from imports, exports and strings) |
 | --- | --- | --- | --- |
