@@ -30,3 +30,6 @@ node_modules/
 /mermaid.core-*.js
 /xlsx-*.js
 /index.html
+
+# Local installers (too large for git; not redistributed).
+/Grok_Bot_*.dmg
