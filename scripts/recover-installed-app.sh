@@ -1,5 +1,6 @@
 #!/bin/zsh
-# Recover an installed Grok Bot.app into recovered/<version>/:
+# Recover YOUR OWN installed Grok Bot.app into recovered/<version>/ for private study.
+# The output is upstream material: it is gitignored and must never be committed or shared (see LEGAL.md).
 #   asar/    raw app.asar contents (incl. unpacked natives)
 #   bundle/  app bundle minus Electron framework, asar and locales
 #   pretty/  Prettier-formatted JS/CSS/HTML/JSON
@@ -31,9 +32,9 @@ mkdir pretty
 
 # tree-sitter addons are upstream OSS; skipped.
 mkdir -p native/bin native/ghidra-project
-for f in "$C/MacOS/"* "$C/Helpers/"*.app/Contents/MacOS/* asar/dist/native/* asar/dist/deps/*/build/Release/*.node; do
+for f in "$C/MacOS/"* "$C/Helpers/"*.app/Contents/MacOS/* asar/dist/native/* asar/dist/deps/**/*.node; do
   n=${${f:t}// /_}
-  [[ $n == tree_sitter* ]] && continue
+  [[ $n == tree[-_]sitter* ]] && continue
   lipo "$f" -thin arm64 -output native/bin/$n 2>/dev/null || cp "$f" native/bin/$n
 done
 for b in native/bin/*; do
