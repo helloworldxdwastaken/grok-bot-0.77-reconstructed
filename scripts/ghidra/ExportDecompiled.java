@@ -23,6 +23,8 @@ public class ExportDecompiled extends GhidraScript {
                 if (monitor.isCancelled()) break;
                 if (f.isThunk() || f.isExternal()) continue;
                 DecompileResults r = ifc.decompileFunction(f, 60, monitor);
+                // A few huge Swift/Rust functions need far longer than 60 s.
+                if (r == null || !r.decompileCompleted()) r = ifc.decompileFunction(f, 600, monitor);
                 c.println("\n// " + f.getEntryPoint() + "  " + f.getName(true));
                 if (r != null && r.decompileCompleted()) {
                     c.println(r.getDecompiledFunction().getC());

@@ -4,6 +4,8 @@
 #   asar/    raw app.asar contents (incl. unpacked natives)
 #   bundle/  app bundle minus Electron framework, asar and locales
 #   pretty/  Prettier-formatted JS/CSS/HTML/JSON
+#   protos/  .proto schemas rebuilt from the bundled descriptors
+#   ipc/     TypeScript contracts for the internal rpc-edge IPC
 #   native/  arm64 slices, Ghidra project and decompiled C per binary
 #
 # Env: APP (default /Applications/Grok Bot.app), GHIDRA (ghidra_*_PUBLIC dir), JAVA_HOME (JDK 21).
@@ -29,13 +31,18 @@ mkdir pretty
 (cd asar && find dist package.json \( -name '*.js' -o -name '*.cjs' -o -name '*.mjs' -o -name '*.css' \
   -o -name '*.html' -o -name '*.json' \) -not -path '*/locales/*' -print0 | rsync -a --from0 --files-from=- . ../pretty/)
 (cd pretty && npx --yes prettier@3.6.2 --no-config --log-level warn --write .)
+node "$ROOT/scripts/recover-protos.mjs" "$OUT"
+node "$ROOT/scripts/recover-ipc.mjs" "$OUT"
 
-# tree-sitter addons are upstream OSS; skipped.
-mkdir -p native/bin native/ghidra-project
-for f in "$C/MacOS/"* "$C/Helpers/"*.app/Contents/MacOS/* asar/dist/native/* asar/dist/deps/**/*.node; do
+# Every Mach-O except Electron Framework itself (stock Chromium, far too large for Ghidra).
+# Universal binaries keep only the arm64 slice; x86_64 is the same code.
+mkdir -p native/bin native/ghidra-project native/entitlements
+for f in "$C/MacOS/"* "$C/Helpers/"*.app/Contents/MacOS/* "$C/Frameworks/"*.app/Contents/MacOS/* \
+  "$C/Frameworks/"{Mantle,ReactiveObjC,Squirrel}.framework/Versions/A/*(.) \
+  "$C/Frameworks/Squirrel.framework/Versions/A/Resources/ShipIt" asar/dist/native/* asar/dist/deps/**/*.node; do
   n=${${f:t}// /_}
-  [[ $n == tree[-_]sitter* ]] && continue
   lipo "$f" -thin arm64 -output native/bin/$n 2>/dev/null || cp "$f" native/bin/$n
+  codesign -d --entitlements - --xml "$f" > native/entitlements/$n.plist 2>/dev/null || true
 done
 for b in native/bin/*; do
   "$GHIDRA/support/analyzeHeadless" native/ghidra-project "GrokBot-$VERSION" -import "$b" -overwrite \
