@@ -19,6 +19,9 @@ It also adds a few practical experiments:
 - an optional local Docker sandbox in place of the remote box; and
 - a reconstructed settings surface integrated into the polished shipped UI.
 
+**Want to help reverse it?** Start with [REVERSING.md](REVERSING.md). It covers
+recovering newer releases (0.75.8, 0.77.0) and the open work.
+
 This is a hacking and research project, not Anysphere's original monorepo and
 not an official Grok Bot release. Names and module boundaries inferred from a
 compiled application may differ from the original source.

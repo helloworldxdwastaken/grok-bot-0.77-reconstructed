@@ -11,7 +11,7 @@ Requirements: Node, Xcode CLT (`lipo`), JDK 21 (`brew install openjdk@21`),
 and a Ghidra 12.x `ghidra_*_PUBLIC` directory.
 
 ```sh
-GHIDRA="$HOME/Desktop/carpeta sin título/.toolchain/ghidra_12.1.4_PUBLIC" scripts/recover-installed-app.sh
+GHIDRA=/path/to/ghidra_12.1.4_PUBLIC scripts/recover-installed-app.sh
 ```
 
 The script reads the version from `Info.plist` and rebuilds
